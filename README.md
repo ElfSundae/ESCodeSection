@@ -5,8 +5,8 @@ It is based on [Xcode Plugin Template](https://github.com/kattrali/Xcode-Plugin-
 
 ### Install
 
-+ **Recommended:** Install via [Alcatraz](http://alcatraz.io)
-+ **Manually:** clone or download this project, build with Xcode and restart Xcode.
++ **Recommended:** Install via [Alcatraz](http://alcatraz.io), search `ESCodeSection`.
++ **Manually:** clone or download this project, build with Xcode, then restart Xcode.
 
 ### Feature
 
