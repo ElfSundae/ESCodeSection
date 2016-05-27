@@ -59,31 +59,86 @@ static ESCodeSection *sharedPlugin;
     NSLog(@"🔌 Plugin %@ %@ %@", name, version, status);
 }
 
+#pragma mark - Helper
+
+/**
+ * Returns the current actived Xcode source editor.
+ */
+- (NSTextView *)currentSourceEditor
+{
+    NSTextView *editor = nil;
+    NSResponder *firstResponder = [NSApp keyWindow].firstResponder;
+    if ([firstResponder isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
+        editor = (NSTextView *)firstResponder;
+    }
+    if (!editor) {
+        NSBeep();
+    }
+
+    return editor;
+}
+
 #pragma mark - Implementation
 
 - (BOOL)initialize
 {
     // Create menu items, initialize UI, etc.
-    // Sample Menu Item:
-    NSMenuItem *menuItem = [[NSApp mainMenu] itemWithTitle:@"Edit"];
-    if (menuItem) {
-        [[menuItem submenu] addItem:[NSMenuItem separatorItem]];
-        NSMenuItem *actionMenuItem = [[NSMenuItem alloc] initWithTitle:@"Do Action" action:@selector(doMenuAction) keyEquivalent:@""];
-        //[actionMenuItem setKeyEquivalentModifierMask:NSAlphaShiftKeyMask | NSControlKeyMask];
-        [actionMenuItem setTarget:self];
-        [[menuItem submenu] addItem:actionMenuItem];
+    NSMenuItem *editMenuItem = [[NSApp mainMenu] itemWithTitle:@"Edit"];
+    if (editMenuItem) {
+        [[editMenuItem submenu] addItem:[NSMenuItem separatorItem]];
+
+        NSMenuItem *codeSeparatorMenuItem = [[NSMenuItem alloc] initWithTitle:@"Insert Code Separator..."
+                                                                       action:@selector(codeSeparatorAction:)
+                                                                keyEquivalent:@"m"];
+        [codeSeparatorMenuItem setKeyEquivalentModifierMask:NSControlKeyMask];
+        [codeSeparatorMenuItem setTarget:self];
+        [[editMenuItem submenu] addItem:codeSeparatorMenuItem];
+
+        NSMenuItem *nameItem = [[NSMenuItem alloc] initWithTitle:@"Insert @name section..."
+                                                          action:@selector(insertNameSectionAction:)
+                                                   keyEquivalent:@"m"];
+        [nameItem setKeyEquivalentModifierMask:NSControlKeyMask | NSShiftKeyMask];
+        [nameItem setTarget:self];
+        [[editMenuItem submenu] addItem:nameItem];
+
         return YES;
     } else {
         return NO;
     }
 }
 
-// Sample Action, for menu item:
-- (void)doMenuAction
+- (void)codeSeparatorAction:(id)sender
 {
-    NSAlert *alert = [[NSAlert alloc] init];
-    [alert setMessageText:@"Hello, World"];
-    [alert runModal];
+    NSTextView *sourceEditor = [self currentSourceEditor];
+    if (!sourceEditor)
+        return;
+
+    [sourceEditor.undoManager beginUndoGrouping];
+    [sourceEditor insertText:
+     @"////////////////////////////////////////////////////////////////////////////////////////////////////\n"
+     @"////////////////////////////////////////////////////////////////////////////////////////////////////\n"
+     @"#pragma mark - "
+            replacementRange:sourceEditor.selectedRange];
+    [sourceEditor.undoManager endUndoGrouping];
+}
+
+- (void)insertNameSectionAction:(id)sender
+{
+    NSTextView *sourceEditor = [self currentSourceEditor];
+    if (!sourceEditor)
+        return;
+
+    [sourceEditor.undoManager beginUndoGrouping];
+    [sourceEditor insertText:
+     @"///=============================================\n"
+     @"/// @name "
+            replacementRange:sourceEditor.selectedRange];
+    NSUInteger location = sourceEditor.selectedRange.location;
+    [sourceEditor insertText:@"\n"
+     @"///=============================================\n"
+            replacementRange:sourceEditor.selectedRange];
+    sourceEditor.selectedRange = NSMakeRange(location, 0);
+    [sourceEditor.undoManager endUndoGrouping];
 }
 
 @end
