@@ -21,7 +21,7 @@ It is based on [Xcode Plugin Template](https://github.com/kattrali/Xcode-Plugin-
 + Insert `@name` section (`ctrl-shift-M`)
 
   ```objc
-  ///=============================================
+  /// =============================================
   /// @name Task name
-  ///=============================================
+  /// =============================================
   ```

@@ -130,12 +130,12 @@ static ESCodeSection *sharedPlugin;
 
     [sourceEditor.undoManager beginUndoGrouping];
     [sourceEditor insertText:
-     @"///=============================================\n"
+     @"/// =============================================\n"
      @"/// @name "
             replacementRange:sourceEditor.selectedRange];
     NSUInteger location = sourceEditor.selectedRange.location;
     [sourceEditor insertText:@"\n"
-     @"///=============================================\n"
+     @"/// =============================================\n"
             replacementRange:sourceEditor.selectedRange];
     sourceEditor.selectedRange = NSMakeRange(location, 0);
     [sourceEditor.undoManager endUndoGrouping];
